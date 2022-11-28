@@ -1,0 +1,10 @@
+package com.taxi.partner.reviewservice.domain;
+
+/**
+ * Created by jt on 11/29/19.
+ */
+public enum ApplicationReviewEventEnum {
+    VALIDATE_APPLICATION, CANCEL_APPLICATION, VALIDATION_PASSED, VALIDATION_FAILED,
+    VERIFY_APPLICATION, VERIFICATION_SUCCESS, VERIFICATION_PENDING, VERIFICATION_FAILED,
+    KIT_PICKED_UP
+}
