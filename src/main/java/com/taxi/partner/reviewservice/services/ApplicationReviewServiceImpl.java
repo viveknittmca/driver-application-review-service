@@ -42,10 +42,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApplicationReviewServiceImpl implements ApplicationReviewService {
 
-    private final ApplicationReviewRepository applicationReviewRepository;
     private final DriverRepository driverRepository;
-    private final ApplicationReviewMapper applicationReviewMapper;
+    private final ApplicationReviewRepository applicationReviewRepository;
     private final ApplicationReviewManager applicationReviewManager;
+    private final ApplicationReviewMapper applicationReviewMapper;
 
     @Override
     public ApplicationReviewPagedList listReviews(UUID customerId, Pageable pageable) {
@@ -75,9 +75,9 @@ public class ApplicationReviewServiceImpl implements ApplicationReviewService {
         if (driverOptional.isPresent()) {
             ApplicationReview applicationReview = applicationReviewMapper.dtoToApplicationReview(applicationReviewDto);
             applicationReview.setId(null); //should not be set by outside client
-            applicationReview.setDriver(driverOptional.get());
             applicationReview.setReviewStatus(ApplicationReviewStatusEnum.NEW);
-
+            applicationReview.setDriver(driverOptional.get());
+            
             applicationReview.getApplicationReviewLines().forEach(line -> line.setApplicationReview(applicationReview));
 
             ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
