@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Created by jt on 3/7/20.
+ * Created by vivek on 01/12/22.
  */
 @Profile("local-discovery")
 @EnableDiscoveryClient

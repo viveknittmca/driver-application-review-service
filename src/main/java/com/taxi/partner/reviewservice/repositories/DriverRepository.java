@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by jt on 2019-01-26.
+ * Created by vivek on 01/12/22.
  */
 public interface DriverRepository extends JpaRepository<Driver, UUID> {
     List<Driver> findAllByDriverNameLike(String customerName);

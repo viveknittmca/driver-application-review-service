@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Created by jt on 11/30/19.
+ * Created by vivek on 11/30/19.
  */
 @Slf4j
 @Component
@@ -34,11 +34,11 @@ public class ReviewStateChangeInterceptor extends StateMachineInterceptorAdapter
         log.debug("Pre-State Change");
 
         Optional.ofNullable(message)
-                .flatMap(msg -> Optional.ofNullable((String) msg.getHeaders().getOrDefault(ReviewManagerImpl.REVIEW_ID_HEADER, " ")))
-                .ifPresent(orderId -> {
-                    log.debug("Saving state for order id: " + orderId + " Status: " + state.getId());
+                .flatMap(msg -> Optional.ofNullable((String) msg.getHeaders().getOrDefault(ReviewManagerImpl.REVIEW_ID_HEADER, "-1L")))
+                .ifPresent(reviewId -> {
+                    log.debug("Saving state for review id: " + reviewId + " Status: " + state.getId());
 
-                    Review review = reviewRepository.getOne(UUID.fromString(orderId));
+                    Review review = reviewRepository.getOne(UUID.fromString(reviewId));
                     review.setReviewStatus(state.getId());
                     reviewRepository.saveAndFlush(review);
                 });

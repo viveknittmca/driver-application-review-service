@@ -5,7 +5,7 @@ import com.taxi.partner.model.DriverDto;
 import org.mapstruct.Mapper;
 
 /**
- * Created by jt on 3/7/20.
+ * Created by vivek on 01/12/22.
  */
 @Mapper(uses = {DateMapper.class})
 public interface DriverMapper {

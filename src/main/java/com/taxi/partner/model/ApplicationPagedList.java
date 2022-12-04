@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by jt on 2019-05-12.
+ * Created by vivek on 01/12/22.
  */
 public class ApplicationPagedList extends PageImpl<ApplicationDto> implements Serializable {
 

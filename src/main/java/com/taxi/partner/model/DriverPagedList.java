@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 /**
- * Created by jt on 3/7/20.
+ * Created by vivek on 01/12/22.
  */
 public class DriverPagedList extends PageImpl<DriverDto> {
     public DriverPagedList(List<DriverDto> content, Pageable pageable, long total) {

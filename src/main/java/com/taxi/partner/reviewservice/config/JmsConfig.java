@@ -8,7 +8,7 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 /**
- * Created by jt on 2019-07-20.
+ * Created by vivek on 01/12/22.
  */
 @Configuration
 public class JmsConfig {

@@ -38,7 +38,7 @@ import static org.jgroups.util.Util.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Created by jt on 2/14/20.
+ * Created by vivek on 01/12/22.
  */
 @ExtendWith(WireMockExtension.class)
 @SpringBootTest
@@ -62,8 +62,6 @@ public class ReviewManagerImplIT {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    Driver testDriver;
-
     UUID applicationId = UUID.randomUUID();
 
     @TestConfiguration
@@ -78,9 +76,7 @@ public class ReviewManagerImplIT {
 
     @BeforeEach
     void setUp() {
-        testDriver = driverRepository.save(Driver.builder()
-                .driverName("Test Customer")
-                .build());
+
     }
 
     @Test

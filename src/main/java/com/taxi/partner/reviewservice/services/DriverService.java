@@ -4,7 +4,7 @@ import com.taxi.partner.model.DriverPagedList;
 import org.springframework.data.domain.Pageable;
 
 /**
- * Created by jt on 3/7/20.
+ * Created by vivek on 01/12/22.
  */
 public interface DriverService {
 

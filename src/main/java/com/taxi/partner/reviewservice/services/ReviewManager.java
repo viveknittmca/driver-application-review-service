@@ -7,7 +7,7 @@ import com.taxi.partner.model.ReviewDto;
 import java.util.UUID;
 
 /**
- * Created by jt on 11/29/19.
+ * Created by vivek on 01/12/22.
  */
 public interface ReviewManager {
 
