@@ -17,7 +17,12 @@
     <name>partner-onboard-review-service</name>
 
     <description>Partner Onboard Review Service</description>
-
+         
+    <properties>
+        <sonar.organization>viveknittmca</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
+         
     <dependencies>
         <dependency>
             <groupId>org.apache.activemq</groupId>
