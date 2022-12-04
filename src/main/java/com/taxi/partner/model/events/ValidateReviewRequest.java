@@ -1,6 +1,6 @@
 package com.taxi.partner.model.events;
 
-import com.taxi.partner.model.ApplicationReviewDto;
+import com.taxi.partner.model.ReviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ValidateReviewRequest {
 
-    private ApplicationReviewDto applicationReview;
+    private ReviewDto applicationReview;
 }

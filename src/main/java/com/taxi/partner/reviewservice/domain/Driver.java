@@ -40,11 +40,11 @@ public class Driver extends BaseEntity {
 
     @Builder
     public Driver(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, String driverName,
-                  UUID apiKey, Set<ApplicationReview> applicationReviews) {
+                  UUID apiKey, Set<Review> reviews) {
         super(id, version, createdDate, lastModifiedDate);
         this.driverName = driverName;
         this.apiKey = apiKey;
-        this.applicationReviews = applicationReviews;
+        this.reviews = reviews;
     }
 
     private String driverName;
@@ -54,6 +54,6 @@ public class Driver extends BaseEntity {
     private UUID apiKey;
 
     @OneToMany(mappedBy = "driver")
-    private Set<ApplicationReview> applicationReviews;
+    private Set<Review> reviews;
 
 }

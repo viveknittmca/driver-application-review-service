@@ -1,4 +1,4 @@
-package com.taxi.partner.reviewservice.services.beer;
+package com.taxi.partner.reviewservice.services.application;
 
 import com.taxi.partner.model.ApplicationDto;
 

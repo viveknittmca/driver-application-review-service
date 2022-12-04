@@ -1,9 +1,9 @@
 package com.taxi.partner.reviewservice.sm.actions;
 
 import com.taxi.partner.reviewservice.config.JmsConfig;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewEventEnum;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewStatusEnum;
-import com.taxi.partner.reviewservice.services.ApplicationReviewManagerImpl;
+import com.taxi.partner.reviewservice.domain.ReviewEventEnum;
+import com.taxi.partner.reviewservice.domain.ReviewStatusEnum;
+import com.taxi.partner.reviewservice.services.ReviewManagerImpl;
 import com.taxi.partner.model.events.VerificationFailureEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class VerificationFailureAction implements Action<ApplicationReviewStatusEnum, ApplicationReviewEventEnum> {
+public class VerificationFailureAction implements Action<ReviewStatusEnum, ReviewEventEnum> {
 
     private final JmsTemplate jmsTemplate;
 
     @Override
-    public void execute(StateContext<ApplicationReviewStatusEnum, ApplicationReviewEventEnum> context) {
-        String beerOrderId = (String) context.getMessage().getHeaders().get(ApplicationReviewManagerImpl.REVIEW_ID_HEADER);
+    public void execute(StateContext<ReviewStatusEnum, ReviewEventEnum> context) {
+        String beerOrderId = (String) context.getMessage().getHeaders().get(ReviewManagerImpl.REVIEW_ID_HEADER);
 
         jmsTemplate.convertAndSend(JmsConfig.VERIFICATION_FAILURE_QUEUE, VerificationFailureEvent.builder()
             .reviewId(UUID.fromString(beerOrderId))

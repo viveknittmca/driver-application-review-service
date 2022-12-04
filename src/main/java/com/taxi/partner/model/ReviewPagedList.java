@@ -15,18 +15,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.taxi.partner.reviewservice.web.mappers;
+package com.taxi.partner.model;
 
-import com.taxi.partner.reviewservice.domain.ApplicationReview;
-import com.taxi.partner.model.ApplicationReviewDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
-@Mapper(uses = {DateMapper.class, ApplicationReviewLineMapper.class})
-public interface ApplicationReviewMapper {
+import java.util.List;
 
-    @Mapping(target = "driverId", source = "driver.id")
-    ApplicationReviewDto applicationReviewToDto(ApplicationReview applicationReview);
+public class ReviewPagedList extends PageImpl<ReviewDto> {
+    public ReviewPagedList(List<ReviewDto> content, Pageable pageable, long total) {
+        super(content, pageable, total);
+    }
 
-    ApplicationReview dtoToApplicationReview(ApplicationReviewDto dto);
+    public ReviewPagedList(List<ReviewDto> content) {
+        super(content);
+    }
 }

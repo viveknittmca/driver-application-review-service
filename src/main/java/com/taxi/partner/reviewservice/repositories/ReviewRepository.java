@@ -17,8 +17,8 @@
 package com.taxi.partner.reviewservice.repositories;
 
 
-import com.taxi.partner.reviewservice.domain.ApplicationReview;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewStatusEnum;
+import com.taxi.partner.reviewservice.domain.Review;
+import com.taxi.partner.reviewservice.domain.ReviewStatusEnum;
 import com.taxi.partner.reviewservice.domain.Driver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +31,11 @@ import java.util.UUID;
 /**
  * Created by jt on 2019-01-26.
  */
-public interface ApplicationReviewRepository extends JpaRepository<ApplicationReview, UUID> {
+public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
-    Page<ApplicationReview> findAllByDriver(Driver driver, Pageable pageable);
+    Review findByReviewId(String reviewId);
 
-    List<ApplicationReview> findAllByReviewStatus(ApplicationReviewStatusEnum orderStatusEnum);
+    List<Review> findAllByReviewStatus(ReviewStatusEnum reviewStatusEnum);
 
    // @Lock(LockModeType.PESSIMISTIC_WRITE)
    // BeerOrder findOneById(UUID id);

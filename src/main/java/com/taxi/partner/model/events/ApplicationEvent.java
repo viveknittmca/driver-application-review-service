@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-/**
- * Created by jt on 2019-07-21.
- */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
 public class ApplicationEvent implements Serializable {
 
-    static final long serialVersionUID = -5781515597148163111L;
-
+    static final long serialVersionUID = -7_562_421_079_300_824_242L;
     private ApplicationDto applicationDto;
 }
+
+

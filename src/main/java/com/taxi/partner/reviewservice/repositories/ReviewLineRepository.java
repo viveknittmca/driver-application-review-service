@@ -15,10 +15,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.taxi.partner.reviewservice.domain;
+package com.taxi.partner.reviewservice.repositories;
 
-public enum ApplicationReviewStatusEnum {
-    NEW, VALIDATED, VALIDATION_PENDING, VALIDATION_EXCEPTION,
-    VERIFICATION_PENDING, VERIFIED, VERIFICATION_EXCEPTION, CANCELLED,
-    PENDING_DOCUMENTS, PICKED_UP, SHIPPED, SHIPPED_EXCEPTION
+import com.taxi.partner.reviewservice.domain.ReviewLine;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import java.util.UUID;
+
+public interface ReviewLineRepository extends PagingAndSortingRepository<ReviewLine, UUID> {
 }

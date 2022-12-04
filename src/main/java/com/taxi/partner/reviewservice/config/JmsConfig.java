@@ -13,6 +13,7 @@ import org.springframework.jms.support.converter.MessageType;
 @Configuration
 public class JmsConfig {
     public static final String REVIEW_REQUEST_QUEUE = "review-request" ;
+    public static final String REVIEW_STATUS_QUEUE = "review-status" ;
     public static final String VALIDATE_REVIEW_QUEUE = "validate-order";
     public static final String VALIDATE_REVIEW_RESPONSE_QUEUE = "validate-order-response";
     public static final String VERIFY_REVIEW_QUEUE = "allocate-order";

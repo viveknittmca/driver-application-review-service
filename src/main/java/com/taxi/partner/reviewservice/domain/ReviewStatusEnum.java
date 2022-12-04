@@ -15,21 +15,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.taxi.partner.reviewservice.services;
+package com.taxi.partner.reviewservice.domain;
 
-
-import com.taxi.partner.model.ApplicationReviewDto;
-import com.taxi.partner.model.ApplicationReviewPagedList;
-import org.springframework.data.domain.Pageable;
-
-import java.util.UUID;
-
-public interface ApplicationReviewService {
-    ApplicationReviewPagedList listReviews(UUID customerId, Pageable pageable);
-
-    ApplicationReviewDto placeReview(UUID customerId, ApplicationReviewDto applicationReviewDto);
-
-    ApplicationReviewDto getReviewById(UUID customerId, UUID reviewId);
-
-    void pickupKit(UUID customerId, UUID reviewId);
+public enum ReviewStatusEnum {
+    NEW,
+    VALIDATION_PENDING, VALIDATION_EXCEPTION, VALIDATED,
+    VERIFICATION_PENDING, VERIFICATION_EXCEPTION, VERIFIED,
+    CANCELLED,
+    SHIPPED
+    //PENDING_DOCUMENTS, , SHIPPED, SHIPPED_EXCEPTION
 }

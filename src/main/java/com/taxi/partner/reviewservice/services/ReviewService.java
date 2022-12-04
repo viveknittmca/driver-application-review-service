@@ -15,12 +15,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.taxi.partner.reviewservice.repositories;
+package com.taxi.partner.reviewservice.services;
 
-import com.taxi.partner.reviewservice.domain.ApplicationReviewLine;
-import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.taxi.partner.model.ReviewDto;
+import com.taxi.partner.model.ReviewPagedList;
+import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface ApplicationReviewLineRepository extends PagingAndSortingRepository<ApplicationReviewLine, UUID> {
+public interface ReviewService {
+    ReviewPagedList listReviews(Pageable pageable);
+
+    ReviewDto placeReview(ReviewDto reviewDto);
+
+    ReviewDto getReviewById(UUID reviewId);
+
+    void pickupKit(UUID customerId, UUID reviewId);
 }

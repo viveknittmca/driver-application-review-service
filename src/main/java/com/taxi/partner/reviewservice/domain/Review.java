@@ -20,10 +20,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -31,27 +33,19 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
-public class ApplicationReviewLine extends BaseEntity {
-
-    @Builder
-    public ApplicationReviewLine(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate,
-                                 ApplicationReview applicationReview, UUID applicationId, String phoneNumber, Integer reviewCount,
-                                 Integer countVerified) {
-        super(id, version, createdDate, lastModifiedDate);
-        this.applicationReview = applicationReview;
-        this.applicationId = applicationId;
-        this.phoneNumber = phoneNumber;
-        this.reviewCount = reviewCount;
-        this.countVerified = countVerified;
-    }
-
-    @ManyToOne
-    private ApplicationReview applicationReview;
+@NoArgsConstructor
+public class Review extends BaseEntity {
 
     private UUID applicationId;
-    private String phoneNumber;
-    private Integer reviewCount = 0;
-    private Integer countVerified = 0;
+
+    @Enumerated(EnumType.STRING)
+    private ReviewStatusEnum reviewStatus = ReviewStatusEnum.NEW;
+
+    @Builder
+    public Review(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, UUID applicationId) {
+        super(id, version, createdDate, lastModifiedDate);
+        this.applicationId = applicationId;
+//      this.reviewStatusCallbackUrl = reviewStatusCallbackUrl;
+    }
 }

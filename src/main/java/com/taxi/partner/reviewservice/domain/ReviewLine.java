@@ -20,15 +20,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.sql.Timestamp;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -36,31 +31,27 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
-public class ApplicationReview extends BaseEntity {
+@Entity
+public class ReviewLine extends BaseEntity {
 
     @Builder
-    public ApplicationReview(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, String driverRef, Driver driver,
-                             Set<ApplicationReviewLine> applicationReviewLines, ApplicationReviewStatusEnum reviewStatus,
-                             String reviewStatusCallbackUrl) {
+    public ReviewLine(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate,
+                      Review review, UUID applicationId, String phoneNumber, Integer reviewCount,
+                      Integer countVerified) {
         super(id, version, createdDate, lastModifiedDate);
-        this.driverRef = driverRef;
-        this.driver = driver;
-        this.applicationReviewLines = applicationReviewLines;
-        this.reviewStatus = reviewStatus;
-        this.reviewStatusCallbackUrl = reviewStatusCallbackUrl;
+        this.review = review;
+        this.applicationId = applicationId;
+        this.phoneNumber = phoneNumber;
+        this.reviewCount = reviewCount;
+        this.countVerified = countVerified;
     }
 
-    private String driverRef;
-
     @ManyToOne
-    private Driver driver;
+    private Review review;
 
-    @OneToMany(mappedBy = "applicationReview", cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
-    private Set<ApplicationReviewLine> applicationReviewLines;
-
-    private ApplicationReviewStatusEnum reviewStatus = ApplicationReviewStatusEnum.NEW;
-    private String reviewStatusCallbackUrl;
+    private UUID applicationId;
+    private String phoneNumber;
+    private Integer reviewCount = 0;
+    private Integer countVerified = 0;
 }

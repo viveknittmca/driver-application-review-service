@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jenspiegsa.wiremockextension.WireMockExtension;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.taxi.partner.reviewservice.config.JmsConfig;
-import com.taxi.partner.reviewservice.domain.ApplicationReview;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewLine;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewStatusEnum;
+import com.taxi.partner.reviewservice.domain.Review;
+import com.taxi.partner.reviewservice.domain.ReviewLine;
+import com.taxi.partner.reviewservice.domain.ReviewStatusEnum;
 import com.taxi.partner.reviewservice.domain.Driver;
-import com.taxi.partner.reviewservice.repositories.ApplicationReviewRepository;
+import com.taxi.partner.reviewservice.repositories.ReviewRepository;
 import com.taxi.partner.reviewservice.repositories.DriverRepository;
-import com.taxi.partner.reviewservice.services.beer.ApplicationServiceImpl;
+import com.taxi.partner.reviewservice.services.application.ApplicationServiceImpl;
 import com.taxi.partner.model.ApplicationDto;
 import com.taxi.partner.model.events.VerificationFailureEvent;
 import com.taxi.partner.model.events.CancelApplicationRequest;
@@ -42,13 +42,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ExtendWith(WireMockExtension.class)
 @SpringBootTest
-public class ApplicationReviewManagerImplIT {
+public class ReviewManagerImplIT {
 
     @Autowired
-    ApplicationReviewManager applicationReviewManager;
+    ReviewManager reviewManager;
 
     @Autowired
-    ApplicationReviewRepository applicationReviewRepository;
+    ReviewRepository reviewRepository;
 
     @Autowired
     DriverRepository driverRepository;
@@ -90,29 +90,26 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
         .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
-
-        await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-
-            assertEquals(ApplicationReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
-        });
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            ApplicationReviewLine line = foundOrder.getApplicationReviewLines().iterator().next();
-            assertEquals(line.getReviewCount(), line.getCountVerified());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+
+            assertEquals(ReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
         });
 
-        ApplicationReview savedApplicationReview2 = applicationReviewRepository.findById(savedApplicationReview.getId()).get();
+        await().untilAsserted(() -> {
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
 
-        assertNotNull(savedApplicationReview2);
-        assertEquals(ApplicationReviewStatusEnum.VERIFIED, savedApplicationReview2.getReviewStatus());
-        savedApplicationReview2.getApplicationReviewLines().forEach(line -> {
-            assertEquals(line.getReviewCount(), line.getCountVerified());
         });
+
+        Review savedReview2 = reviewRepository.findById(savedReview.getId()).get();
+
+        assertNotNull(savedReview2);
+        assertEquals(ReviewStatusEnum.VERIFIED, savedReview2.getReviewStatus());
+
     }
 
     @Test
@@ -122,15 +119,14 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
-        applicationReview.setDriverRef("fail-validation");
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
 
-            assertEquals(ApplicationReviewStatusEnum.VALIDATION_EXCEPTION, foundOrder.getReviewStatus());
+            assertEquals(ReviewStatusEnum.VALIDATION_EXCEPTION, foundOrder.getReviewStatus());
         });
     }
 
@@ -141,25 +137,25 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
-
-        await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
-        });
-
-        applicationReviewManager.kitPickedUp(savedApplicationReview.getId());
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.PICKED_UP, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
         });
 
-        ApplicationReview pickedUpOrder = applicationReviewRepository.findById(savedApplicationReview.getId()).get();
+        reviewManager.kitPickedUp(savedReview.getId());
 
-        assertEquals(ApplicationReviewStatusEnum.PICKED_UP, pickedUpOrder.getReviewStatus());
+        await().untilAsserted(() -> {
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.SHIPPED, foundOrder.getReviewStatus());
+        });
+
+        Review pickedUpOrder = reviewRepository.findById(savedReview.getId()).get();
+
+        assertEquals(ReviewStatusEnum.SHIPPED, pickedUpOrder.getReviewStatus());
     }
 
     @Test
@@ -169,20 +165,19 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
-        applicationReview.setDriverRef("fail-allocation");
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.VERIFICATION_EXCEPTION, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VERIFICATION_EXCEPTION, foundOrder.getReviewStatus());
         });
 
         VerificationFailureEvent verificationFailureEvent = (VerificationFailureEvent) jmsTemplate.receiveAndConvert(JmsConfig.VERIFICATION_FAILURE_QUEUE);
 
         assertNotNull(verificationFailureEvent);
-        assertThat(verificationFailureEvent.getReviewId()).isEqualTo(savedApplicationReview.getId());
+        assertThat(verificationFailureEvent.getReviewId()).isEqualTo(savedReview.getId());
     }
 
     @Test
@@ -192,14 +187,13 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
-        applicationReview.setDriverRef("partial-allocation");
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.PENDING_DOCUMENTS, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VERIFICATION_PENDING, foundOrder.getReviewStatus());
         });
     }
 
@@ -210,21 +204,20 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
-        applicationReview.setDriverRef("dont-validate");
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.VALIDATION_PENDING, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VALIDATION_PENDING, foundOrder.getReviewStatus());
         });
 
-        applicationReviewManager.cancelApplication(savedApplicationReview.getId());
+        reviewManager.cancelReview(savedReview.getId());
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
         });
     }
 
@@ -235,21 +228,20 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
-        applicationReview.setDriverRef("dont-allocate");
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.VERIFICATION_PENDING, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VERIFICATION_PENDING, foundOrder.getReviewStatus());
         });
 
-        applicationReviewManager.cancelApplication(savedApplicationReview.getId());
+        reviewManager.cancelReview(savedReview.getId());
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
         });
     }
 
@@ -260,43 +252,38 @@ public class ApplicationReviewManagerImplIT {
         wireMockServer.stubFor(get(ApplicationServiceImpl.APPLICATION_PHONE_NUMBER_PATH_V1 + "12345")
                 .willReturn(okJson(objectMapper.writeValueAsString(applicationDto))));
 
-        ApplicationReview applicationReview = createApplicationReview();
+        Review review = createApplicationReview();
 
-        ApplicationReview savedApplicationReview = applicationReviewManager.newApplicationReview(applicationReview);
+        Review savedReview = reviewManager.newReview(review);
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.VERIFIED, foundOrder.getReviewStatus());
         });
 
-        applicationReviewManager.cancelApplication(savedApplicationReview.getId());
+        reviewManager.cancelReview(savedReview.getId());
 
         await().untilAsserted(() -> {
-            ApplicationReview foundOrder = applicationReviewRepository.findById(applicationReview.getId()).get();
-            assertEquals(ApplicationReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
+            Review foundOrder = reviewRepository.findById(review.getId()).get();
+            assertEquals(ReviewStatusEnum.CANCELLED, foundOrder.getReviewStatus());
         });
 
         CancelApplicationRequest cancelApplicationRequest = (CancelApplicationRequest) jmsTemplate.receiveAndConvert(JmsConfig.APPLICATION_CANCEL_QUEUE);
 
         assertNotNull(cancelApplicationRequest);
-        assertThat(cancelApplicationRequest.getApplicationReviewDto().getId()).isEqualTo(savedApplicationReview.getId());
+        assertThat(cancelApplicationRequest.getReviewDto().getId()).isEqualTo(savedReview.getId());
     }
 
-    public ApplicationReview createApplicationReview(){
-        ApplicationReview applicationReview = ApplicationReview.builder()
-                .driver(testDriver)
+    public Review createApplicationReview(){
+        Review review = Review.builder()
                 .build();
 
-        Set<ApplicationReviewLine> lines = new HashSet<>();
-        lines.add(ApplicationReviewLine.builder()
+        Set<ReviewLine> lines = new HashSet<>();
+        lines.add(ReviewLine.builder()
                 .applicationId(applicationId)
                 .phoneNumber("12345")
                 .reviewCount(1)
-                .applicationReview(applicationReview)
                 .build());
-
-        applicationReview.setApplicationReviewLines(lines);
-
-        return applicationReview;
+        return review;
     }
 }

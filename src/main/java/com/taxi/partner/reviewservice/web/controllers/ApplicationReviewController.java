@@ -17,32 +17,31 @@
 
 package com.taxi.partner.reviewservice.web.controllers;
 
-import com.taxi.partner.reviewservice.services.ApplicationReviewService;
-import com.taxi.partner.model.ApplicationReviewDto;
-import com.taxi.partner.model.ApplicationReviewPagedList;
+import com.taxi.partner.reviewservice.services.ReviewService;
+import com.taxi.partner.model.ReviewDto;
+import com.taxi.partner.model.ReviewPagedList;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@RequestMapping("/api/v1/drivers/{driverId}/")
+@RequestMapping("/api/v1/")
 @RestController
 public class ApplicationReviewController {
 
     private static final Integer DEFAULT_PAGE_NUMBER = 0;
     private static final Integer DEFAULT_PAGE_SIZE = 25;
 
-    private final ApplicationReviewService applicationReviewService;
+    private final ReviewService reviewService;
 
-    public ApplicationReviewController(ApplicationReviewService applicationReviewService) {
-        this.applicationReviewService = applicationReviewService;
+    public ApplicationReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
     }
 
     @GetMapping("reviews")
-    public ApplicationReviewPagedList listReviews(@PathVariable("driverId") UUID driverId,
-                                                  @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                                  @RequestParam(value = "pageSize", required = false) Integer pageSize){
+    public ReviewPagedList listReviews(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+                                       @RequestParam(value = "pageSize", required = false) Integer pageSize){
 
         if (pageNumber == null || pageNumber < 0){
             pageNumber = DEFAULT_PAGE_NUMBER;
@@ -52,23 +51,23 @@ public class ApplicationReviewController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        return applicationReviewService.listReviews(driverId, PageRequest.of(pageNumber, pageSize));
+        return reviewService.listReviews(PageRequest.of(pageNumber, pageSize));
     }
 
     @PostMapping("reviews")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApplicationReviewDto placeReview(@PathVariable("driverId") UUID driverId, @RequestBody ApplicationReviewDto applicationReviewDto){
-        return applicationReviewService.placeReview(driverId, applicationReviewDto);
+    public ReviewDto placeReview(@RequestBody ReviewDto reviewDto){
+        return reviewService.placeReview(reviewDto);
     }
 
     @GetMapping("reviews/{reviewId}")
-    public ApplicationReviewDto getReview(@PathVariable("driverId") UUID driverId, @PathVariable("reviewId") UUID reviewId){
-        return applicationReviewService.getReviewById(driverId, reviewId);
+    public ReviewDto getReviewById(@PathVariable("reviewId") UUID reviewId){
+        return reviewService.getReviewById(reviewId);
     }
 
     @PutMapping("/reviews/{reviewId}/pickup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void pickupKit(@PathVariable("driverId") UUID customerId, @PathVariable("reviewId") UUID reviewId){
-        applicationReviewService.pickupKit(customerId, reviewId);
+        reviewService.pickupKit(customerId, reviewId);
     }
 }

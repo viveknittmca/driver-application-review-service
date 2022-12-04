@@ -32,7 +32,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApplicationReviewDto {
+public class ReviewDto {
 
     @JsonProperty("id")
     private UUID id = null;

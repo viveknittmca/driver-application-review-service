@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class ApplicationReviewBootStrap implements CommandLineRunner {
+public class ReviewBootStrap implements CommandLineRunner {
     public static final String APPLICATION_SUBMIT = "Application Submit";
     public static final String APPLICATION_1_PHONE_NUM = "0631234200036";
     public static final String APPLICATION_2_PHONE_NUM = "0631234300019";
@@ -29,7 +29,7 @@ public class ApplicationReviewBootStrap implements CommandLineRunner {
     }
 
     private void loadDriverData() {
-        if (driverRepository.findAllByDriverNameLike(ApplicationReviewBootStrap.APPLICATION_SUBMIT) .size() == 0) {
+        if (driverRepository.findAllByDriverNameLike(ReviewBootStrap.APPLICATION_SUBMIT) .size() == 0) {
             Driver savedDriver = driverRepository.saveAndFlush(Driver.builder()
                     .driverName(APPLICATION_SUBMIT)
                     .apiKey(UUID.randomUUID())

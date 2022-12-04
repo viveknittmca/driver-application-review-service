@@ -1,12 +1,12 @@
 package com.taxi.partner.reviewservice.sm.actions;
 
 import com.taxi.partner.reviewservice.config.JmsConfig;
-import com.taxi.partner.reviewservice.domain.ApplicationReview;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewEventEnum;
-import com.taxi.partner.reviewservice.domain.ApplicationReviewStatusEnum;
-import com.taxi.partner.reviewservice.repositories.ApplicationReviewRepository;
-import com.taxi.partner.reviewservice.services.ApplicationReviewManagerImpl;
-import com.taxi.partner.reviewservice.web.mappers.ApplicationReviewMapper;
+import com.taxi.partner.reviewservice.domain.Review;
+import com.taxi.partner.reviewservice.domain.ReviewEventEnum;
+import com.taxi.partner.reviewservice.domain.ReviewStatusEnum;
+import com.taxi.partner.reviewservice.repositories.ReviewRepository;
+import com.taxi.partner.reviewservice.services.ReviewManagerImpl;
+import com.taxi.partner.reviewservice.web.mappers.ReviewMapper;
 import com.taxi.partner.model.events.VerifyReviewRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,21 +24,21 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class VerifyReviewAction implements Action<ApplicationReviewStatusEnum, ApplicationReviewEventEnum> {
+public class VerifyReviewAction implements Action<ReviewStatusEnum, ReviewEventEnum> {
 
     private final JmsTemplate jmsTemplate;
-    private final ApplicationReviewRepository applicationReviewRepository;
-    private final ApplicationReviewMapper applicationReviewMapper;
+    private final ReviewRepository reviewRepository;
+    private final ReviewMapper reviewMapper;
 
     @Override
-    public void execute(StateContext<ApplicationReviewStatusEnum, ApplicationReviewEventEnum> context) {
-        String beerOrderId = (String) context.getMessage().getHeaders().get(ApplicationReviewManagerImpl.REVIEW_ID_HEADER);
-        Optional<ApplicationReview> applicationReviewOptional = applicationReviewRepository.findById(UUID.fromString(beerOrderId));
+    public void execute(StateContext<ReviewStatusEnum, ReviewEventEnum> context) {
+        String beerOrderId = (String) context.getMessage().getHeaders().get(ReviewManagerImpl.REVIEW_ID_HEADER);
+        Optional<Review> applicationReviewOptional = reviewRepository.findById(UUID.fromString(beerOrderId));
 
         applicationReviewOptional.ifPresentOrElse(beerOrder -> {
                     jmsTemplate.convertAndSend(JmsConfig.VERIFY_REVIEW_QUEUE,
                             VerifyReviewRequest.builder()
-                            .applicationReviewDto(applicationReviewMapper.applicationReviewToDto(beerOrder))
+                            .reviewDto(reviewMapper.applicationReviewToDto(beerOrder))
                             .build());
                     log.debug("Sent Allocation Request for order id: " + beerOrderId);
                 }, () -> log.error("Beer Order Not Found!"));

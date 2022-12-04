@@ -1,7 +1,7 @@
 package com.taxi.partner.reviewservice.web.mappers;
 
-import com.taxi.partner.reviewservice.domain.ApplicationReviewLine;
-import com.taxi.partner.reviewservice.services.beer.ApplicationService;
+import com.taxi.partner.reviewservice.domain.ReviewLine;
+import com.taxi.partner.reviewservice.services.application.ApplicationService;
 import com.taxi.partner.model.ApplicationDto;
 import com.taxi.partner.model.ApplicationReviewLineDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,10 @@ import java.util.Optional;
 /**
  * Created by jt on 2019-06-09.
  */
-public abstract class ApplicationReviewLineMapperDecorator implements ApplicationReviewLineMapper {
+public abstract class ReviewLineMapperDecorator implements ReviewLineMapper {
 
     private ApplicationService applicationService;
-    private ApplicationReviewLineMapper applicationReviewLineMapper;
+    private ReviewLineMapper applicationReviewLineMapper;
 
     @Autowired
     public void setApplicationService(ApplicationService applicationService) {
@@ -24,12 +24,12 @@ public abstract class ApplicationReviewLineMapperDecorator implements Applicatio
 
     @Autowired
     @Qualifier("delegate")
-    public void setApplicationReviewLineMapper(ApplicationReviewLineMapper applicationReviewLineMapper) {
+    public void setApplicationReviewLineMapper(ReviewLineMapper applicationReviewLineMapper) {
         this.applicationReviewLineMapper = applicationReviewLineMapper;
     }
 
     @Override
-    public ApplicationReviewLineDto applicationReviewLineToDto(ApplicationReviewLine line) {
+    public ApplicationReviewLineDto applicationReviewLineToDto(ReviewLine line) {
         ApplicationReviewLineDto orderLineDto = applicationReviewLineMapper.applicationReviewLineToDto(line);
         Optional<ApplicationDto> beerDtoOptional = applicationService.getApplicationByPhoneNumber(line.getPhoneNumber());
 
